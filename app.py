@@ -1,5 +1,5 @@
 # app.py - Enhanced Flask Blog System with User Authentication
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, session
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, session, abort
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -35,6 +35,7 @@ class User(UserMixin, db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     is_active = db.Column(db.Boolean, default=True)
     posts = db.relationship('Post', backref='author', lazy=True, cascade='all, delete-orphan')
+    is_admin = db.Column(db.Boolean, nullable=False, default=False)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -364,6 +365,29 @@ def api_user(username):
         'joined': user.created_at.isoformat()
     })
 
+# Note the new function name: 'admin_delete_post'
+@app.route('/post/<int:post_id>/admin_delete', methods=['POST'])
+@login_required  # Ensures user must be logged in
+def admin_delete_post(post_id):
+    
+    # 1. Check if the logged-in user is an admin
+    if not current_user.is_admin:
+        abort(403)  # This will now work!
+        
+    # 2. Find the post or show a 404 "Not Found" error
+    post = Post.query.get_or_404(post_id)
+    
+    # 3. Delete the post from the database
+    try:
+        db.session.delete(post)
+        db.session.commit()
+        flash('Post has been deleted successfully by admin.', 'success')
+    except:
+        db.session.rollback()
+        flash('Error: Could not delete post.', 'danger')
+        
+    # 4. Redirect back to the homepage
+    return redirect(url_for('index'))
 # Initialize database and create sample data
 def init_database():
     with app.app_context():
@@ -448,7 +472,7 @@ if __name__ == '__main__':
     print("=" * 60)
     print("📊 Sample users created:")
     print("  👤 Username: admin     | Password: admin123")
-    print("  👤 Username: john_doe  | Password: john123") 
+    print("  👤 Username: john_doe  | Password: john123")
     print("  👤 Username: jane_smith| Password: jane123")
     print("=" * 60)
     print("🌐 Visit: http://127.0.0.1:5000")
