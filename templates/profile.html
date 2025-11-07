@@ -1,0 +1,386 @@
+<!-- templates/profile.html -->
+{% extends "base.html" %}
+
+{% block title %}{{ current_user.get_full_name() }} - Profile{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <!-- Profile Sidebar -->
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <div class="mb-4">
+                        <div class="bg-primary rounded-circle d-inline-flex align-items-center justify-content-center"
+                            style="width: 120px; height: 120px; font-size: 3rem; color: white;">
+                            {{ current_user.first_name[0].upper() }}{{ current_user.last_name[0].upper() }}
+                        </div>
+                    </div>
+
+                    <h4 class="mb-1">{{ current_user.get_full_name() }}</h4>
+                    <p class="text-muted mb-3">@{{ current_user.username }}</p>
+
+                    {% if current_user.bio %}
+                    <p class="text-muted">{{ current_user.bio }}</p>
+                    {% else %}
+                    <p class="text-muted fst-italic">No bio added yet</p>
+                    {% endif %}
+
+                    <div class="row text-center mt-4">
+                        <div class="col-4">
+                            <h5 class="mb-0">{{ user_posts|length }}</h5>
+                            <small class="text-muted">Posts</small>
+                        </div>
+                        <div class="col-4">
+                            <h5 class="mb-0">{{ current_user.created_at.strftime('%Y') }}</h5>
+                            <small class="text-muted">Joined</small>
+                        </div>
+                        <div class="col-4">
+                            <h5 class="mb-0">{{ user_posts|selectattr('is_published')|list|length }}</h5>
+                            <small class="text-muted">Published</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <button class="btn btn-primary w-100" onclick="toggleEditMode()">
+                        <i class="fas fa-edit"></i> Edit Profile
+                    </button>
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="fas fa-chart-bar"></i> Quick Stats
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Total Posts</span>
+                        <strong>{{ user_posts|length }}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Published</span>
+                        <strong class="text-success">{{ user_posts|selectattr('is_published')|list|length }}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Drafts</span>
+                        <strong class="text-warning">{{ user_posts|rejectattr('is_published')|list|length }}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span>Member Since</span>
+                        <strong>{{ current_user.created_at.strftime('%b %Y') }}</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            <!-- Profile Edit Form (Hidden by default) -->
+            <div class="card mb-4" id="editProfileCard" style="display: none;">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">
+                        <i class="fas fa-user-edit"></i> Edit Profile
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('edit_profile') }}" id="editProfileForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="first_name" class="form-label">First Name *</label>
+                                    <input type="text" class="form-control" id="first_name" name="first_name"
+                                        value="{{ current_user.first_name }}" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="last_name" class="form-label">Last Name *</label>
+                                    <input type="text" class="form-control" id="last_name" name="last_name"
+                                        value="{{ current_user.last_name }}" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email Address *</label>
+                            <input type="email" class="form-control" id="email" name="email"
+                                value="{{ current_user.email }}" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="bio" class="form-label">Bio</label>
+                            <textarea class="form-control" id="bio" name="bio" rows="3" maxlength="500"
+                                placeholder="Tell us about yourself...">{{ current_user.bio or '' }}</textarea>
+                            <div class="form-text">
+                                <span id="bioCount">{{ (current_user.bio or '')|length }}</span>/500 characters
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save"></i> Save Changes
+                            </button>
+                            <button type="button" class="btn btn-secondary" onclick="cancelEdit()">
+                                <i class="fas fa-times"></i> Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- User Posts -->
+            <div class="card" id="postsCard">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-file-alt"></i> My Posts
+                    </h5>
+                    <div>
+                        <select class="form-select form-select-sm" id="postFilter" onchange="filterPosts()">
+                            <option value="all">All Posts ({{ user_posts|length }})</option>
+                            <option value="published">Published ({{ user_posts|selectattr('is_published')|list|length
+                                }})</option>
+                            <option value="drafts">Drafts ({{ user_posts|rejectattr('is_published')|list|length }})
+                            </option>
+                        </select>
+                    </div>
+                </div>
+                <div class="card-body">
+                    {% if user_posts %}
+                    <div class="row">
+                        {% for post in user_posts %}
+                        <div class="col-12 post-item"
+                            data-status="{{ 'published' if post.is_published else 'drafts' }}">
+                            <div class="card mb-3 {{ 'border-warning' if not post.is_published else '' }}">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <h6 class="card-title mb-0">
+                                            <a href="{{ url_for('view_post', post_id=post.id) }}"
+                                                class="text-decoration-none">
+                                                {{ post.title }}
+                                            </a>
+                                            {% if not post.is_published %}
+                                            <span class="badge bg-warning text-dark ms-2">Draft</span>
+                                            {% endif %}
+                                        </h6>
+                                        <div class="dropdown">
+                                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle"
+                                                type="button" data-bs-toggle="dropdown">
+                                                <i class="fas fa-ellipsis-v"></i>
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <li>
+                                                    <a class="dropdown-item"
+                                                        href="{{ url_for('view_post', post_id=post.id) }}">
+                                                        <i class="fas fa-eye"></i> View
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item"
+                                                        href="{{ url_for('edit_post', post_id=post.id) }}">
+                                                        <i class="fas fa-edit"></i> Edit
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <hr class="dropdown-divider">
+                                                </li>
+                                                <li>
+                                                    <button class="dropdown-item text-danger"
+                                                        onclick="deletePost({{ post.id }}, '{{ post.title }}')">
+                                                        <i class="fas fa-trash"></i> Delete
+                                                    </button>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+
+                                    <p class="card-text text-muted mb-2">
+                                        {{ post.content[:100] }}{% if post.content|length > 100 %}...{% endif %}
+                                    </p>
+
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <small class="text-muted">
+                                            <i class="fas fa-calendar"></i> {{ post.created_at.strftime('%b %d, %Y') }}
+                                            {% if post.updated_at != post.created_at %}
+                                            • <i class="fas fa-edit"></i> Updated {{ post.updated_at.strftime('%b %d,
+                                            %Y') }}
+                                            {% endif %}
+                                        </small>
+                                        <div>
+                                            <a href="{{ url_for('edit_post', post_id=post.id) }}"
+                                                class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-edit"></i> Edit
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-file-alt fa-4x text-muted mb-3"></i>
+                        <h5>No Posts Yet</h5>
+                        <p class="text-muted">Start sharing your thoughts with the world!</p>
+                        <a href="{{ url_for('create_post') }}" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Write Your First Post
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+                {% if user_posts %}
+                <div class="card-footer text-center">
+                    <a href="{{ url_for('create_post') }}" class="btn btn-success">
+                        <i class="fas fa-plus"></i> Write New Post
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Post Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-exclamation-triangle text-warning"></i>
+                    Delete Post
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete "<span id="postTitle"></span>"?</p>
+                <p class="text-muted">This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    Cancel
+                </button>
+                <form id="deleteForm" method="POST" style="display: inline;">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash"></i> Delete Post
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function toggleEditMode() {
+        const editCard = document.getElementById('editProfileCard');
+        const postsCard = document.getElementById('postsCard');
+
+        if (editCard.style.display === 'none') {
+            editCard.style.display = 'block';
+            postsCard.style.display = 'none';
+            document.getElementById('first_name').focus();
+        } else {
+            editCard.style.display = 'none';
+            postsCard.style.display = 'block';
+        }
+    }
+
+    function cancelEdit() {
+        document.getElementById('editProfileForm').reset();
+        // Restore original values
+        document.getElementById('first_name').value = '{{ current_user.first_name }}';
+        document.getElementById('last_name').value = '{{ current_user.last_name }}';
+        document.getElementById('email').value = '{{ current_user.email }}';
+        document.getElementById('bio').value = '{{ current_user.bio or "" }}';
+
+        toggleEditMode();
+    }
+
+    function filterPosts() {
+        const filter = document.getElementById('postFilter').value;
+        const posts = document.querySelectorAll('.post-item');
+
+        posts.forEach(post => {
+            if (filter === 'all') {
+                post.style.display = 'block';
+            } else {
+                const status = post.getAttribute('data-status');
+                post.style.display = status === filter ? 'block' : 'none';
+            }
+        });
+    }
+
+    function deletePost(postId, postTitle) {
+        document.getElementById('postTitle').textContent = postTitle;
+        document.getElementById('deleteForm').action = '{{ url_for("delete_post", post_id=0) }}'.replace('0', postId);
+
+        const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+        modal.show();
+    }
+
+    // Bio character counter
+    document.addEventListener('DOMContentLoaded', function () {
+        const bioTextarea = document.getElementById('bio');
+        const bioCount = document.getElementById('bioCount');
+
+        if (bioTextarea && bioCount) {
+            bioTextarea.addEventListener('input', function () {
+                const length = this.value.length;
+                bioCount.textContent = length;
+
+                if (length > 450) {
+                    bioCount.style.color = '#dc3545';
+                } else if (length > 400) {
+                    bioCount.style.color = '#fd7e14';
+                } else {
+                    bioCount.style.color = '#6c757d';
+                }
+            });
+        }
+
+        // Profile form validation
+        const editForm = document.getElementById('editProfileForm');
+        if (editForm) {
+            editForm.addEventListener('submit', function (e) {
+                const firstName = document.getElementById('first_name').value.trim();
+                const lastName = document.getElementById('last_name').value.trim();
+                const email = document.getElementById('email').value.trim();
+
+                if (!firstName || !lastName || !email) {
+                    e.preventDefault();
+                    alert('Please fill in all required fields.');
+                    return false;
+                }
+
+                const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailPattern.test(email)) {
+                    e.preventDefault();
+                    alert('Please enter a valid email address.');
+                    document.getElementById('email').focus();
+                    return false;
+                }
+            });
+        }
+    });
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', function (e) {
+        // E key to toggle edit mode
+        if (e.key === 'e' && !e.ctrlKey && !e.metaKey && !e.target.matches('input, textarea')) {
+            toggleEditMode();
+        }
+
+        // Escape key to cancel edit
+        if (e.key === 'Escape') {
+            const editCard = document.getElementById('editProfileCard');
+            if (editCard && editCard.style.display !== 'none') {
+                cancelEdit();
+            }
+        }
+    });
+</script>
+{% endblock %}

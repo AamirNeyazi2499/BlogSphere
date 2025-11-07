@@ -1,0 +1,190 @@
+<!-- templates/login.html -->
+{% extends "base.html" %}
+
+{% block title %}Login - Blog System{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <!-- Login Card -->
+            <div class="card shadow-lg">
+                <div class="card-header bg-primary text-white text-center py-4">
+                    <h3 class="mb-0">
+                        <i class="fas fa-sign-in-alt"></i> Welcome Back
+                    </h3>
+                    <p class="mb-0 opacity-75">Sign in to your account</p>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST" id="loginForm">
+                        <div class="mb-3">
+                            <label for="username" class="form-label">
+                                <i class="fas fa-user"></i> Username
+                            </label>
+                            <input type="text" 
+                                   class="form-control form-control-lg" 
+                                   id="username" 
+                                   name="username" 
+                                   placeholder="Enter your username"
+                                   required
+                                   autocomplete="username"
+                                   value="{{ request.form.username if request.form }}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="password" class="form-label">
+                                <i class="fas fa-lock"></i> Password
+                            </label>
+                            <div class="input-group">
+                                <input type="password" 
+                                       class="form-control form-control-lg" 
+                                       id="password" 
+                                       name="password" 
+                                       placeholder="Enter your password"
+                                       required
+                                       autocomplete="current-password">
+                                <button class="btn btn-outline-secondary" 
+                                        type="button" 
+                                        onclick="togglePassword()">
+                                    <i class="fas fa-eye" id="passwordToggleIcon"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="remember_me" name="remember_me">
+                            <label class="form-check-label" for="remember_me">
+                                Remember me for 30 days
+                            </label>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-sign-in-alt"></i> Sign In
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer text-center bg-light">
+                    <p class="mb-0">
+                        Don't have an account? 
+                        <a href="{{ url_for('register') }}" class="text-decoration-none">
+                            <i class="fas fa-user-plus"></i> Sign up here
+                        </a>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Demo Accounts Info -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="fas fa-info-circle"></i> Demo Accounts
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <small class="text-muted">
+                        Try these demo accounts (click to auto-fill):
+                    </small>
+                    <div class="row mt-2">
+                        <div class="col-md-4">
+                            <div class="border rounded p-2 mb-2 demo-account" 
+                                 onclick="quickLogin('admin', 'admin123')"
+                                 style="cursor: pointer;">
+                                <strong>Admin User</strong><br>
+                                <small class="text-muted">
+                                    Username: <code>admin</code><br>
+                                    Password: <code>admin123</code>
+                                </small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="border rounded p-2 mb-2 demo-account" 
+                                 onclick="quickLogin('john_doe', 'john123')"
+                                 style="cursor: pointer;">
+                                <strong>John Doe</strong><br>
+                                <small class="text-muted">
+                                    Username: <code>john_doe</code><br>
+                                    Password: <code>john123</code>
+                                </small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="border rounded p-2 mb-2 demo-account" 
+                                 onclick="quickLogin('jane_smith', 'jane123')"
+                                 style="cursor: pointer;">
+                                <strong>Jane Smith</strong><br>
+                                <small class="text-muted">
+                                    Username: <code>jane_smith</code><br>
+                                    Password: <code>jane123</code>
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function togglePassword() {
+    const passwordInput = document.getElementById('password');
+    const toggleIcon = document.getElementById('passwordToggleIcon');
+    
+    if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        toggleIcon.className = 'fas fa-eye-slash';
+    } else {
+        passwordInput.type = 'password';
+        toggleIcon.className = 'fas fa-eye';
+    }
+}
+
+function quickLogin(username, password) {
+    document.getElementById('username').value = username;
+    document.getElementById('password').value = password;
+    document.getElementById('loginForm').submit();
+}
+
+// Form validation
+document.getElementById('loginForm').addEventListener('submit', function(e) {
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value;
+
+    if (!username) {
+        e.preventDefault();
+        alert('Please enter your username.');
+        document.getElementById('username').focus();
+        return false;
+    }
+
+    if (!password) {
+        e.preventDefault();
+        alert('Please enter your password.');
+        document.getElementById('password').focus();
+        return false;
+    }
+});
+
+// Auto-focus on username field
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('username').focus();
+    
+    // Add hover effects to demo accounts
+    document.querySelectorAll('.demo-account').forEach(account => {
+        account.addEventListener('mouseenter', function() {
+            this.style.backgroundColor = '#f8f9fa';
+            this.style.borderColor = '#007bff';
+        });
+        
+        account.addEventListener('mouseleave', function() {
+            this.style.backgroundColor = '';
+            this.style.borderColor = '#dee2e6';
+        });
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,397 @@
+<!-- templates/register.html -->
+{% extends "base.html" %}
+
+{% block title %}Register - Blog System{% endblock %}
+
+{% block scripts %}
+<script>
+function togglePassword(fieldId) {
+    const passwordInput = document.getElementById(fieldId);
+    const toggleIcon = document.getElementById(fieldId + 'ToggleIcon');
+    
+    if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        toggleIcon.className = 'fas fa-eye-slash';
+    } else {
+        passwordInput.type = 'password';
+        toggleIcon.className = 'fas fa-eye';
+    }
+}
+
+function quickLogin(username, password) {
+    document.getElementById('username').value = username;
+    document.getElementById('password').value = password;
+}
+
+function checkPasswordStrength(password) {
+    let strength = 0;
+    let feedback = [];
+
+    if (password.length >= 6) strength += 1;
+    else feedback.push('at least 6 characters');
+
+    if (/[a-z]/.test(password)) strength += 1;
+    else feedback.push('lowercase letters');
+
+    if (/[A-Z]/.test(password)) strength += 1;
+    else feedback.push('uppercase letters');
+
+    if (/[0-9]/.test(password)) strength += 1;
+    else feedback.push('numbers');
+
+    if (/[^A-Za-z0-9]/.test(password)) strength += 1;
+    else feedback.push('special characters');
+
+    return { strength, feedback };
+}
+
+function updatePasswordStrength() {
+    const password = document.getElementById('password').value;
+    const strengthBar = document.getElementById('passwordStrengthBar');
+    const strengthText = document.getElementById('passwordStrengthText');
+
+    if (!password) {
+        strengthBar.style.width = '0%';
+        strengthBar.className = 'progress-bar';
+        strengthText.textContent = 'Not entered';
+        strengthText.className = 'text-muted';
+        return;
+    }
+
+    const { strength, feedback } = checkPasswordStrength(password);
+    const percentage = (strength / 5) * 100;
+
+    strengthBar.style.width = percentage + '%';
+
+    if (strength <= 2) {
+        strengthBar.className = 'progress-bar bg-danger';
+        strengthText.textContent = 'Weak';
+        strengthText.className = 'text-danger';
+    } else if (strength <= 3) {
+        strengthBar.className = 'progress-bar bg-warning';
+        strengthText.textContent = 'Fair';
+        strengthText.className = 'text-warning';
+    } else if (strength <= 4) {
+        strengthBar.className = 'progress-bar bg-info';
+        strengthText.textContent = 'Good';
+        strengthText.className = 'text-info';
+    } else {
+        strengthBar.className = 'progress-bar bg-success';
+        strengthText.textContent = 'Strong';
+        strengthText.className = 'text-success';
+    }
+}
+
+function checkPasswordMatch() {
+    const password = document.getElementById('password').value;
+    const confirmPassword = document.getElementById('confirm_password').value;
+    const matchIndicator = document.getElementById('passwordMatch');
+
+    if (!confirmPassword) {
+        matchIndicator.textContent = 'Enter password again';
+        matchIndicator.className = 'text-muted';
+        return;
+    }
+
+    if (password === confirmPassword) {
+        matchIndicator.textContent = 'Passwords match ✓';
+        matchIndicator.className = 'text-success';
+    } else {
+        matchIndicator.textContent = 'Passwords do not match';
+        matchIndicator.className = 'text-danger';
+    }
+}
+
+// Real-time validation
+document.addEventListener('DOMContentLoaded', function() {
+    const passwordInput = document.getElementById('password');
+    const confirmPasswordInput = document.getElementById('confirm_password');
+    const usernameInput = document.getElementById('username');
+
+    passwordInput.addEventListener('input', function() {
+        updatePasswordStrength();
+        checkPasswordMatch();
+    });
+
+    confirmPasswordInput.addEventListener('input', checkPasswordMatch);
+
+    // Username validation
+    usernameInput.addEventListener('input', function() {
+        const username = this.value;
+        const isValid = /^[a-zA-Z0-9_]{3,20}$/.test(username);
+        
+        if (username && !isValid) {
+            this.classList.add('is-invalid');
+        } else {
+            this.classList.remove('is-invalid');
+        }
+    });
+
+    // Form validation
+    document.getElementById('registerForm').addEventListener('submit', function(e) {
+        const formData = new FormData(this);
+        const data = Object.fromEntries(formData);
+
+        // Check required fields
+        const requiredFields = ['first_name', 'last_name', 'username', 'email', 'password', 'confirm_password'];
+        for (let field of requiredFields) {
+            if (!data[field] || data[field].trim() === '') {
+                e.preventDefault();
+                alert(`Please fill in the ${field.replace('_', ' ')} field.`);
+                document.getElementById(field).focus();
+                return false;
+            }
+        }
+
+        // Password match check
+        if (data.password !== data.confirm_password) {
+            e.preventDefault();
+            alert('Passwords do not match!');
+            document.getElementById('confirm_password').focus();
+            return false;
+        }
+
+        // Password strength check
+        const { strength } = checkPasswordStrength(data.password);
+        if (strength < 2) {
+            e.preventDefault();
+            alert('Please choose a stronger password with at least 6 characters including letters and numbers.');
+            document.getElementById('password').focus();
+            return false;
+        }
+
+        // Username validation
+        if (!/^[a-zA-Z0-9_]{3,20}$/.test(data.username)) {
+            e.preventDefault();
+            alert('Username must be 3-20 characters and contain only letters, numbers, and underscores.');
+            document.getElementById('username').focus();
+            return false;
+        }
+
+        // Email validation
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailPattern.test(data.email)) {
+            e.preventDefault();
+            alert('Please enter a valid email address.');
+            document.getElementById('email').focus();
+            return false;
+        }
+
+        // Terms acceptance
+        if (!document.getElementById('terms').checked) {
+            e.preventDefault();
+            alert('Please accept the Terms of Service and Privacy Policy.');
+            document.getElementById('terms').focus();
+            return false;
+        }
+    });
+
+    // Auto-focus on first name
+    document.getElementById('first_name').focus();
+});
+</script>
+{% endblock %} %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <!-- Registration Card -->
+            <div class="card shadow-lg">
+                <div class="card-header bg-success text-white text-center py-4">
+                    <h3 class="mb-0">
+                        <i class="fas fa-user-plus"></i> Create Account
+                    </h3>
+                    <p class="mb-0 opacity-75">Join our blogging community</p>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST" id="registerForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="first_name" class="form-label">
+                                        <i class="fas fa-user"></i> First Name *
+                                    </label>
+                                    <input type="text" 
+                                           class="form-control" 
+                                           id="first_name" 
+                                           name="first_name" 
+                                           placeholder="John"
+                                           required
+                                           maxlength="50"
+                                           value="{{ request.form.first_name if request.form }}">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="last_name" class="form-label">
+                                        <i class="fas fa-user"></i> Last Name *
+                                    </label>
+                                    <input type="text" 
+                                           class="form-control" 
+                                           id="last_name" 
+                                           name="last_name" 
+                                           placeholder="Doe"
+                                           required
+                                           maxlength="50"
+                                           value="{{ request.form.last_name if request.form }}">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="username" class="form-label">
+                                <i class="fas fa-at"></i> Username *
+                            </label>
+                            <input type="text" 
+                                   class="form-control" 
+                                   id="username" 
+                                   name="username" 
+                                   placeholder="Choose a unique username"
+                                   required
+                                   pattern="[a-zA-Z0-9_]{3,20}"
+                                   title="3-20 characters: letters, numbers, underscores only"
+                                   value="{{ request.form.username if request.form }}">
+                            <div class="form-text">
+                                3-20 characters. Letters, numbers, and underscores only.
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="email" class="form-label">
+                                <i class="fas fa-envelope"></i> Email Address *
+                            </label>
+                            <input type="email" 
+                                   class="form-control" 
+                                   id="email" 
+                                   name="email" 
+                                   placeholder="your.email@example.com"
+                                   required
+                                   value="{{ request.form.email if request.form }}">
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="password" class="form-label">
+                                        <i class="fas fa-lock"></i> Password *
+                                    </label>
+                                    <div class="input-group">
+                                        <input type="password" 
+                                               class="form-control" 
+                                               id="password" 
+                                               name="password" 
+                                               placeholder="Create a strong password"
+                                               required
+                                               minlength="6">
+                                        <button class="btn btn-outline-secondary" 
+                                                type="button" 
+                                                onclick="togglePassword('password')">
+                                            <i class="fas fa-eye" id="passwordToggleIcon"></i>
+                                        </button>
+                                    </div>
+                                    <div class="form-text">
+                                        Minimum 6 characters with letters and numbers
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="confirm_password" class="form-label">
+                                        <i class="fas fa-lock"></i> Confirm Password *
+                                    </label>
+                                    <div class="input-group">
+                                        <input type="password" 
+                                               class="form-control" 
+                                               id="confirm_password" 
+                                               name="confirm_password" 
+                                               placeholder="Confirm your password"
+                                               required
+                                               minlength="6">
+                                        <button class="btn btn-outline-secondary" 
+                                                type="button" 
+                                                onclick="togglePassword('confirm_password')">
+                                            <i class="fas fa-eye" id="confirmPasswordToggleIcon"></i>
+                                        </button>
+                                    </div>
+                                    <div class="form-text">
+                                        <span id="passwordMatch" class="text-muted">Enter password again</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Password Strength Indicator -->
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <small class="text-muted">Password Strength:</small>
+                                <small id="passwordStrengthText" class="text-muted">Not entered</small>
+                            </div>
+                            <div class="progress" style="height: 4px;">
+                                <div id="passwordStrengthBar" 
+                                     class="progress-bar" 
+                                     role="progressbar" 
+                                     style="width: 0%">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4 form-check">
+                            <input type="checkbox" class="form-check-input" id="terms" required>
+                            <label class="form-check-label" for="terms">
+                                I agree to the <a href="#" class="text-decoration-none">Terms of Service</a> 
+                                and <a href="#" class="text-decoration-none">Privacy Policy</a> *
+                            </label>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-success btn-lg" id="submitBtn">
+                                <i class="fas fa-user-plus"></i> Create Account
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer text-center bg-light">
+                    <p class="mb-0">
+                        Already have an account? 
+                        <a href="{{ url_for('login') }}" class="text-decoration-none">
+                            <i class="fas fa-sign-in-alt"></i> Sign in here
+                        </a>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Registration Tips -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="fas fa-lightbulb"></i> Registration Tips
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-check-circle text-success"></i> Username Guidelines</h6>
+                            <ul class="list-unstyled small">
+                                <li><i class="fas fa-arrow-right text-primary"></i> Use 3-20 characters</li>
+                                <li><i class="fas fa-arrow-right text-primary"></i> Only letters, numbers, underscores</li>
+                                <li><i class="fas fa-arrow-right text-primary"></i> Must be unique</li>
+                                <li><i class="fas fa-arrow-right text-primary"></i> Cannot be changed later</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-shield-alt text-info"></i> Security Tips</h6>
+                            <ul class="list-unstyled small">
+                                <li><i class="fas fa-arrow-right text-primary"></i> Use a strong password</li>
+                                <li><i class="fas fa-arrow-right text-primary"></i> Include letters and numbers</li>
+                                <li><i class="fas fa-arrow-right text-primary"></i> Don't reuse passwords</li>
+                                <li><i class="fas fa-arrow-right text-primary"></i> Keep your email secure</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,286 @@
+<!-- templates/index.html -->
+{% extends "base.html" %}
+
+{% block title %}Home - BlogSphere{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container text-center">
+        {% if current_user.is_authenticated %}
+        <h1 class="display-4 fw-bold mb-3">
+            <i class="fas fa-blog"></i> Welcome back, {{ current_user.first_name }}!
+        </h1>
+        <p class="lead mb-4">Ready to share your thoughts with the world?</p>
+        <a href="{{ url_for('create_post') }}" class="btn btn-outline-light btn-lg me-2">
+            <i class="fas fa-pen"></i> Write a Post
+        </a>
+        <a href="{{ url_for('profile') }}" class="btn btn-light btn-lg">
+            <i class="fas fa-user"></i> My Profile
+        </a>
+        {% else %}
+        <h1 class="display-4 fw-bold mb-3">
+            <i class="fas fa-blog"></i> Welcome to BlogSphere
+        </h1>
+        <p class="lead mb-4">Discover amazing stories, tutorials, and insights from our community</p>
+        <a href="{{ url_for('register') }}" class="btn btn-outline-light btn-lg me-2">
+            <i class="fas fa-user-plus"></i> Join Us
+        </a>
+        <a href="{{ url_for('login') }}" class="btn btn-light btn-lg">
+            <i class="fas fa-sign-in-alt"></i> Sign In
+        </a>
+        {% endif %}
+    </div>
+</section>
+
+<div class="container">
+    {% if posts %}
+    <div class="row">
+        <div class="col-12 mb-4">
+            <h2 class="h3 mb-4">
+                <i class="fas fa-newspaper"></i> Latest Posts
+                <span class="badge bg-primary">{{ posts|length }}</span>
+            </h2>
+        </div>
+    </div>
+
+    <div class="row">
+        {% for post in posts %}
+        <div class="col-lg-6 col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-transparent border-0 pt-4">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <h5 class="card-title mb-0">
+                            <a href="{{ url_for('view_post', post_id=post.id) }}"
+                                class="text-decoration-none text-dark">
+                                {{ post.title }}
+                            </a>
+                        </h5>
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button"
+                                data-bs-toggle="dropdown">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a class="dropdown-item" href="{{ url_for('view_post', post_id=post.id) }}">
+                                        <i class="fas fa-eye"></i> View
+                                    </a>
+                                </li>
+                                {% if current_user.is_authenticated and current_user.id == post.user_id %}
+                                <li>
+                                    <a class="dropdown-item" href="{{ url_for('edit_post', post_id=post.id) }}">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <button class="dropdown-item text-danger"
+                                        onclick="deletePost({{ post.id }}, '{{ post.title }}')">
+                                        <i class="fas fa-trash"></i> Delete
+                                    </button>
+                                </li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body pt-0">
+                    <div class="post-meta mb-3">
+                        <small>
+                            <i class="fas fa-user"></i> {{ post.author.get_full_name() }}
+                            <span class="text-muted">(@{{ post.author.username }})</span> •
+                            <i class="fas fa-calendar"></i> {{ post.created_at.strftime('%b %d, %Y') }}
+                            {% if post.updated_at != post.created_at %}
+                            • <i class="fas fa-edit"></i> Updated
+                            {% endif %}
+                        </small>
+                    </div>
+                    <p class="card-text post-content">
+                        {% if post.content|length > 150 %}
+                        {{ post.content[:150] }}...
+                        {% else %}
+                        {{ post.content }}
+                        {% endif %}
+                    </p>
+                </div>
+                <div class="card-footer bg-transparent border-0">
+                    <a href="{{ url_for('view_post', post_id=post.id) }}" class="btn btn-primary btn-sm">
+                        <i class="fas fa-arrow-right"></i> Read More
+                    </a>
+                    {% if current_user.is_authenticated and current_user.id == post.user_id %}
+                    <a href="{{ url_for('edit_post', post_id=post.id) }}" class="btn btn-outline-secondary btn-sm ms-2">
+                        <i class="fas fa-edit"></i> Edit
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% if loop.index % 2 == 0 %}
+    </div><div class="row">
+        {% endif %}
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="row justify-content-center">
+        <div class="col-md-6 text-center">
+            <div class="card">
+                <div class="card-body py-5">
+                    <i class="fas fa-file-alt fa-4x text-muted mb-4"></i>
+                    <h4 class="card-title">No Posts Yet</h4>
+                    <p class="card-text text-muted">
+                        {% if current_user.is_authenticated %}
+                        Start your blogging journey by creating your first post!
+                        {% else %}
+                        Join our community and start sharing your thoughts!
+                        {% endif %}
+                    </p>
+                    {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('create_post') }}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Create First Post
+                    </a>
+                    {% else %}
+                    <a href="{{ url_for('register') }}" class="btn btn-primary me-2">
+                        <i class="fas fa-user-plus"></i> Join Now
+                    </a>
+                    <a href="{{ url_for('login') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-sign-in-alt"></i> Sign In
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Statistics Section -->
+    {% if posts %}
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="fas fa-chart-bar"></i> Community Statistics
+                    </h5>
+                    <div class="row text-center">
+                        <div class="col-md-3">
+                            <div class="p-3">
+                                <i class="fas fa-file-alt fa-2x text-primary mb-2"></i>
+                                <h4>{{ posts|length }}</h4>
+                                <p class="text-muted mb-0">Published Posts</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="p-3">
+                                <i class="fas fa-users fa-2x text-success mb-2"></i>
+                                <h4>{{ posts|map(attribute='author')|map(attribute='username')|unique|list|length }}</h4>
+                                <p class="text-muted mb-0">Active Authors</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="p-3">
+                                <i class="fas fa-calendar fa-2x text-info mb-2"></i>
+                                <h4>{{ posts[0].created_at.strftime('%b %d') if posts else 'N/A' }}</h4>
+                                <p class="text-muted mb-0">Latest Post</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="p-3">
+                                <i class="fas fa-eye fa-2x text-warning mb-2"></i>
+                                <h4>
+                                    {{ (posts|map(attribute='content')|map('length')|sum / 200)|round|int if posts else 0 }}
+                                </h4>
+                                <p class="text-muted mb-0">Min Reading</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-exclamation-triangle text-warning"></i>
+                    Confirm Delete
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete the post "<span id="postTitle"></span>"?</p>
+                <p class="text-muted">This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="deleteForm" method="POST" style="display: inline;">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash"></i> Delete Post
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function deletePost(postId, postTitle) {
+        document.getElementById('postTitle').textContent = postTitle;
+        document.getElementById('deleteForm').action = '{{ url_for("delete_post", post_id=0) }}'.replace('0', postId);
+
+        const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+        modal.show();
+    }
+
+    // Add search functionality
+    document.addEventListener('DOMContentLoaded', function () {
+        const heroSection = document.querySelector('.hero-section .container');
+        const searchHTML = `
+        <div class="row justify-content-center mt-4">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <input type="text" id="searchInput" class="form-control form-control-lg" placeholder="Search posts, authors, content...">
+                    <span class="input-group-text">
+                        <i class="fas fa-search"></i>
+                    </span>
+                </div>
+            </div>
+        </div>`;
+        heroSection.innerHTML += searchHTML;
+
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) {
+            searchInput.addEventListener('input', function () {
+                const searchTerm = this.value.toLowerCase();
+                const postCards = document.querySelectorAll('.col-lg-6');
+
+                postCards.forEach(cardColumn => {
+                    const card = cardColumn.querySelector('.card');
+                    const title = card.querySelector('.card-title a');
+                    const content = card.querySelector('.card-text');
+                    const author = card.querySelector('.post-meta');
+
+                    if (title && content && author) {
+                        const titleText = title.textContent.toLowerCase();
+                        const contentText = content.textContent.toLowerCase();
+                        const authorText = author.textContent.toLowerCase();
+
+                        const isMatch = titleText.includes(searchTerm) ||
+                                        contentText.includes(searchTerm) ||
+                                        authorText.includes(searchTerm);
+
+                        cardColumn.style.display = isMatch ? 'block' : 'none';
+                    }
+                });
+            });
+        }
+    });
+</script>
+{% endblock %}
