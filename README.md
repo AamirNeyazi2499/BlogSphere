@@ -3,6 +3,10 @@
 A **full-stack blog system web application** built with **Flask, SQLAlchemy, HTML, CSS, and Bootstrap**.  
 This project was developed during my **Summer Internship (May–July 2025)**, where I gain hands-on experience in **web development**.
 
+## 🚀 Demo
+
+[Live Demo](https://blogsphere-luvh.onrender.com)
+
 ---
 
 ## 🚀 Features
@@ -58,7 +62,8 @@ python app.py
 
 ### Folder Structure 
 
-<img width="223" height="435" alt="Screenshot 2025-09-03 190623" src="https://github.com/user-attachments/assets/6d736cfe-74b6-4a10-909a-6d142d975398" />
+<img width="252" height="599" alt="image" src="https://github.com/user-attachments/assets/7d262926-b940-41e5-bba1-94def8659708" />
+
 
 
 ### Create Account 
@@ -94,7 +99,6 @@ python app.py
 - ⭐ Add a like/dislike or reactions feature for blog posts  
 - 💬 Real-time comments using WebSockets  
 - 🔔 Notification system for new comments and likes  
-- ☁️ Deploy on **Heroku / Render / Railway** for public access  
 - 📊 Add analytics dashboard for admin (track users, posts, traffic)
 
 ---
