@@ -281,7 +281,7 @@ def create_post():
 def edit_post(post_id):
     post = Post.query.get_or_404(post_id)
     
-    if post.user_id != current_user.id:
+    if post.user_id != current_user.id and not current_user.is_admin:
         flash('You can only edit your own posts!', 'error')
         return redirect(url_for('index'))
     
