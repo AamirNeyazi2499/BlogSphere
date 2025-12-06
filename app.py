@@ -429,8 +429,20 @@ def init_database():
             # Create sample posts
             sample_posts = [
                 Post(
+                    title="Lionel Messi: Little boy from Rosario who completed football",
+                    content="For over two decades, one name has been almost synonymous with football: Lionel Messi. You don't even have to follow the sport to know who he is. For fans, he is more than just a player; he's an artist, a magician, and for many, the greatest to ever play the game. His story isn't just about talent, it's about overcoming obstacles and achieving the one thing that eluded him for so long.\n\nBorn in Rosario, Argentina, Messi's journey to greatness began with a dream. From a young age, it was clear he had something special. But his path wasn't easy. Diagnosed with a growth hormone deficiency, his future in football was uncertain. Yet, with the unwavering support of his family and an unrelenting passion for the game, Messi's talent shone through.\n\nAt just 13 years old, Messi made a life-changing move to Barcelona, Spain. The club agreed to pay for his medical treatment, and in return, they gained one of the most gifted players the world has ever seen. From there, Messi's rise was meteoric. He quickly progressed through the ranks of Barcelona's youth academy, La Masia, and made his first-team debut at just 17.\n\nOver the years, Messi has shattered records and won countless accolades. His dribbling skills are unparalleled, his vision on the field is extraordinary, and his goal-scoring ability is nothing short of phenomenal. With numerous Ballon d'Or awards to his name, Messi has cemented his legacy as one of football's all-time greats.\n\nBut beyond the statistics and trophies, Messi's impact goes deeper. He has inspired millions around the world with his humility, dedication, and love for the game. His story is a testament to what can be achieved with talent, hard work, and perseverance.\n\nAs Messi continues to dazzle fans worldwide, one thing remains certain: he is not just a footballer; he is a legend whose story will be told for generations to come.",
+                    user_id=admin_user.id,
+                    is_published=True
+                ),
+                Post(
                     title="Welcome to Our Enhanced Blog System",
                     content="This is our new and improved blog system! Now with user authentication, you can create your own account, write posts, save drafts, and manage your content. We've added many exciting features including user profiles, secure login, and much more. Feel free to explore and start writing your own posts!",
+                    user_id=admin_user.id,
+                    is_published=True
+                ),
+                Post(
+                    title="The Simple Guide to Healthy Meal Prep (Without the Stress)",
+                    content="Meal prepping can be a game-changer for maintaining a healthy diet, but it doesn't have to be complicated or stressful. Here are some simple tips to get you started on your meal prep journey:\n\n1. Plan Your Meals: Decide on a few recipes for the week that are nutritious and easy to prepare.\n2. Make a Shopping List: Write down all the ingredients you'll need to avoid multiple trips to the store.\n3. Choose a Prep Day: Set aside a specific day and time each week for meal prepping.\n4. Keep It Simple: Focus on recipes with minimal ingredients and steps.\n5. Use Versatile Ingredients: Opt for ingredients that can be used in multiple dishes.\n6. Invest in Quality Containers: Use BPA-free containers that are microwave and dishwasher safe.\n7. Portion Control: Pre-portion your meals to avoid overeating.\n8. Mix It Up: Prepare a variety of meals to keep things interesting throughout the week.\n\nWith these tips, meal prepping can become an enjoyable and stress-free part of your routine, helping you stay on track with your health goals.",
                     user_id=admin_user.id,
                     is_published=True
                 ),
@@ -441,9 +453,21 @@ def init_database():
                     is_published=True
                 ),
                 Post(
-                    title="Web Development Best Practices",
-                    content="Here are some essential tips for modern web development:\n\n1. Always validate user input on both client and server side\n2. Use responsive design principles for mobile compatibility\n3. Optimize for performance with proper caching\n4. Test your applications thoroughly\n5. Implement proper user authentication and authorization\n6. Keep your dependencies updated\n7. Use version control effectively\n\nThese practices will help you build robust and secure web applications.",
-                    user_id=jane_user.id,
+                    title="What is 'Slow Fashion' and Why Should You Care?",
+                    content="Most of us are used to 'fast fashion', which means new clothes are cheap and available all the time. 'Slow fashion' is the opposite. It's a growing trend focused on buying fewer, better-quality items that last for years, not just a season.\n\nIt's about thinking where your clothes come from. Who made them? What are they made of? This movement is not about judging people for their shopping habits. Instead, it's about finding joy in clothes you truly love. We'll talk about simple ways to start, like repairing what you own, exploring secondhand shops, or saving up for one quality piece instead of buying five cheap ones.",
+                    user_id=admin_user.id,
+                    is_published=True
+                ),
+                Post(
+                    title="Is AI Actually Useful for Normal People?",
+                    content="We hear about Artificial Intelligence all the time, and it usually sounds big and complicated. But it's not just for scientists and tech companies. The truth is, AI is already helping most of us in small ways every day.\n\nThink about the smart replies your email suggests or the navigation app that finds a faster route to work. That's AI. It's also in the camera on your phone, making your pictures look better without you doing anything. This post explores a few simple AI tools you can use right now to help with writing, planning, or just having fun. It's less about science fiction and more about real, practical help.",
+                    user_id=admin_user.id,
+                    is_published=True
+                ),
+                Post(
+                    title="I Tried a 'Digital Detox' for 48 Hours. Here's What Happened.", 
+                    content="My phone is the first thing I check in the morning and the last thing I see at night. I'm guessing I'm not alone. I decided to try a 'digital detox' for one full weekend, from Friday evening to Monday morning. No social media, no news scrolling, and no email.\n\nTo be honest, the first few hours were strange. I felt bored and a little anxious, like I was missing something. But then a funny thing happened. I read a book. I went for a long walk without looking at a screen. I had a real, uninterrupted conversation with my family. This post covers what I learned, why it was harder than I expected, and why I'll absolutely be doing it again.",
+                    user_id=admin_user.id,
                     is_published=True
                 ),
                 Post(

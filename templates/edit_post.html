@@ -1,4 +1,3 @@
-<!-- templates/edit_post.html -->
 {% extends "base.html" %}
 
 {% block title %}Edit: {{ post.title }} - Blog System{% endblock %}
@@ -7,7 +6,6 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-lg-8">
-            <!-- Back Button -->
             <div class="mb-3">
                 <a href="{{ url_for('view_post', post_id=post.id) }}" class="btn btn-outline-secondary btn-sm">
                     <i class="fas fa-arrow-left"></i> Back to Post
@@ -50,12 +48,91 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-</div>
 
-<!-- Unsaved Changes Warning Modal -->
-<div class="modal fade" id="unsavedChangesModal" tabindex="-1">
+            <form method="POST" id="editPostForm" class="mt-4">
+                <div class="mb-4">
+                    <label for="title" class="form-label">
+                        <i class="fas fa-heading"></i> Post Title *
+                    </label>
+                    <input type="text" class="form-control form-control-lg" id="title" name="title" value="{{ post.title }}"
+                        placeholder="Enter an engaging title for your post" required maxlength="200">
+                    <div class="form-text">
+                        <span id="titleCount">{{ post.title|length }}</span>/200 characters
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label for="content" class="form-label">
+                        <i class="fas fa-align-left"></i> Content *
+                    </label>
+                    <textarea class="form-control" id="content" name="content" rows="15"
+                        placeholder="Write your blog post content here..." required>{{ post.content }}</textarea>
+                    <div class="form-text">
+                        <span id="contentCount">{{ post.content|length }}</span> characters • <span id="wordCount">0</span> words
+                    </div>
+                </div>
+
+                <div class="mb-4 form-check">
+                    <input type="checkbox" class="form-check-input" id="is_published" name="is_published" {{ 'checked' if
+                        post.is_published else '' }}>
+                    <label class="form-check-label" for="is_published">
+                        <i class="fas fa-globe"></i> Published
+                    </label>
+                    <div class="form-text">
+                        Uncheck to save as draft. Check to make visible to all users.
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <label class="form-label mb-0">
+                            <i class="fas fa-eye"></i> Preview Changes
+                        </label>
+                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="updatePreview()">
+                            <i class="fas fa-refresh"></i> Update Preview
+                        </button>
+                    </div>
+                    <div class="card">
+                        <div class="card-body" id="previewContent">
+                            </div>
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2 d-md-flex justify-content-md-between">
+                    <div>
+                        <a href="{{ url_for('view_post', post_id=post.id) }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-times"></i> Cancel
+                        </a>
+                        <button type="button" class="btn btn-info" onclick="updatePreview()">
+                            <i class="fas fa-eye"></i> Preview
+                        </button>
+                    </div>
+                    <div>
+                        <button type="button" class="btn btn-warning" onclick="resetForm()">
+                            <i class="fas fa-undo"></i> Reset Changes
+                        </button>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save"></i> Update Post
+                        </button>
+                    </div>
+                </div>
+            </form>
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-lightbulb"></i> Editing Tips
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p>Use keyboard shortcuts for faster editing:</p>
+                    <ul>
+                        <li><strong>Ctrl/Cmd + S:</strong> Save changes</li>
+                        <li><strong>Ctrl/Cmd + Z:</strong> Reset all changes</li>
+                        <li><strong>Esc:</strong> Cancel and go back</li>
+                    </ul>
+                </div>
+            </div>
+            </div> </div> </div> <div class="modal fade" id="unsavedChangesModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -86,7 +163,7 @@
     // Store original values for comparison
     const originalTitle = `{{ post.title }}`;
     const originalContent = `{{ post.content }}`;
-    const originalPublished = {{ 'true' if post.is_published else 'false' }};
+    const originalPublished = `{{ 'true' if post.is_published else 'false' }}` === 'true';
     let hasUnsavedChanges = false;
     let pendingNavigation = null;
 
@@ -300,84 +377,4 @@
     });
     document.getElementById('is_published').addEventListener('change', updatePreview);
 </script>
-{% endblock %}<form method="POST" id="editPostForm">
-    <div class="mb-4">
-        <label for="title" class="form-label">
-            <i class="fas fa-heading"></i> Post Title *
-        </label>
-        <input type="text" class="form-control form-control-lg" id="title" name="title" value="{{ post.title }}"
-            placeholder="Enter an engaging title for your post" required maxlength="200">
-        <div class="form-text">
-            <span id="titleCount">{{ post.title|length }}</span>/200 characters
-        </div>
-    </div>
-
-    <div class="mb-4">
-        <label for="content" class="form-label">
-            <i class="fas fa-align-left"></i> Content *
-        </label>
-        <textarea class="form-control" id="content" name="content" rows="15"
-            placeholder="Write your blog post content here..." required>{{ post.content }}</textarea>
-        <div class="form-text">
-            <span id="contentCount">{{ post.content|length }}</span> characters • <span id="wordCount">0</span> words
-        </div>
-    </div>
-
-    <div class="mb-4 form-check">
-        <input type="checkbox" class="form-check-input" id="is_published" name="is_published" {{ 'checked' if
-            post.is_published else '' }}>
-        <label class="form-check-label" for="is_published">
-            <i class="fas fa-globe"></i> Published
-        </label>
-        <div class="form-text">
-            Uncheck to save as draft. Check to make visible to all users.
-        </div>
-    </div>
-
-    <!-- Changes Preview -->
-    <div class="mb-4">
-        <div class="d-flex justify-content-between align-items-center mb-2">
-            <label class="form-label mb-0">
-                <i class="fas fa-eye"></i> Preview Changes
-            </label>
-            <button type="button" class="btn btn-sm btn-outline-primary" onclick="updatePreview()">
-                <i class="fas fa-refresh"></i> Update Preview
-            </button>
-        </div>
-        <div class="card">
-            <div class="card-body" id="previewContent">
-                <!-- Initial preview will be populated by JavaScript -->
-            </div>
-        </div>
-    </div>
-
-    <div class="d-grid gap-2 d-md-flex justify-content-md-between">
-        <div>
-            <a href="{{ url_for('view_post', post_id=post.id) }}" class="btn btn-outline-secondary">
-                <i class="fas fa-times"></i> Cancel
-            </a>
-            <button type="button" class="btn btn-info" onclick="updatePreview()">
-                <i class="fas fa-eye"></i> Preview
-            </button>
-        </div>
-        <div>
-            <button type="button" class="btn btn-warning" onclick="resetForm()">
-                <i class="fas fa-undo"></i> Reset Changes
-            </button>
-            <button type="submit" class="btn btn-success">
-                <i class="fas fa-save"></i> Update Post
-            </button>
-        </div>
-    </div>
-</form>
-</div>
-</div>
-
-<!-- Editing Tips Card -->
-<div class="card mt-4">
-    <div class="card-header">
-        <h5 class="mb-0">
-            <i class="fas fa-lightbulb"></i> Editing Tips
-        </h5>
-    </div>
-    <div class="card-body">
+{% endblock %}
