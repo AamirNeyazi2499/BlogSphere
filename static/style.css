@@ -1,0 +1,109 @@
+
+    body {
+        background-color: #f8f9fa;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    /* --- UPDATED: Forest Green Background --- */
+    .navbar {
+        background-color: #2d6a4f; /* Solid Forest Green */
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .navbar-brand {
+        font-weight: bold;
+        font-size: 1.5rem;
+        color: white !important; /* Ensure visibility on green */
+    }
+    
+    /* Bootstrap nav links might need color adjustment, usually adding .navbar-dark class in HTML handles this */
+
+    .card {
+        border: none;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s ease-in-out;
+    }
+
+    .card:hover {
+        transform: translateY(-2px);
+    }
+
+    /* --- UPDATED: Vibrant Orange Buttons --- */
+    .btn-primary {
+        background-color: #fca311; /* Vibrant Orange */
+        border: none;
+        color: white; /* White text */
+        font-weight: 500;
+    }
+
+    .btn-primary:hover {
+        background-color: #e08e0b; /* Slightly darker orange for hover */
+        transform: translateY(-1px);
+        color: white;
+    }
+
+    .post-meta {
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+
+    .post-content {
+        line-height: 1.6;
+    }
+
+    .alert {
+        border-radius: 10px;
+        border: none;
+    }
+
+    .footer {
+        background-color: #343a40;
+        color: white;
+        margin-top: 50px;
+    }
+
+    .fade-in {
+        animation: fadeIn 0.5s ease-in;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* --- UPDATED: Forest Green Hero --- */
+    .hero-section {
+        background-color: #2d6a4f; /* Solid Forest Green */
+        color: white;
+        padding: 60px 0;
+        margin-bottom: 40px;
+    }
+
+    .btn-outline-light:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+        border-color: white;
+    }
+
+    .dropdown-menu {
+        border: none;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .user-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 14px;
+        background-color: rgba(255, 255, 255, 0.2); /* Semi-transparent white looks good on green */
+        color: white;
+    }

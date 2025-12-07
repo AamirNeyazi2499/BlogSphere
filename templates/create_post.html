@@ -12,7 +12,8 @@
                     <h4 class="mb-0">
                         <i class="fas fa-pen"></i> Create New Blog Post
                     </h4>
-                    <small class="opacity-75">Writing as {{ current_user.get_full_name() }} (@{{ current_user.username }})</small>
+                    <small class="opacity-75">Writing as {{ current_user.get_full_name() }} (@{{ current_user.username
+                        }})</small>
                 </div>
                 <div class="card-body">
                     <form method="POST" id="createPostForm">
@@ -20,16 +21,12 @@
                             <label for="title" class="form-label">
                                 <i class="fas fa-heading"></i> Post Title *
                             </label>
-                            <input type="text" 
-                                   class="form-control form-control-lg" 
-                                   id="title" 
-                                   name="title" 
-                                   placeholder="Enter an engaging title for your post"
-                                   required
-                                   maxlength="200"
-                                   value="{{ request.form.title if request.form }}">
+                            <input type="text" class="form-control form-control-lg" id="title" name="title"
+                                placeholder="Enter an engaging title for your post" required maxlength="200"
+                                value="{{ request.form.title if request.form }}">
                             <div class="form-text">
-                                <span id="titleCount">{{ (request.form.title|length) if request.form.title else 0 }}</span>/200 characters
+                                <span id="titleCount">{{ (request.form.title|length) if request.form.title else 0
+                                    }}</span>/200 characters
                             </div>
                         </div>
 
@@ -37,23 +34,18 @@
                             <label for="content" class="form-label">
                                 <i class="fas fa-align-left"></i> Content *
                             </label>
-                            <textarea class="form-control" 
-                                      id="content" 
-                                      name="content" 
-                                      rows="12" 
-                                      placeholder="Write your blog post content here... You can use line breaks for paragraphs."
-                                      required>{{ request.form.content if request.form.content }}</textarea>
+                            <textarea class="form-control" id="content" name="content" rows="12"
+                                placeholder="Write your blog post content here... You can use line breaks for paragraphs."
+                                required>{{ request.form.content if request.form.content }}</textarea>
                             <div class="form-text">
-                                <span id="contentCount">{{ (request.form.content|length) if request.form.content else 0 }}</span> characters • <span id="wordCount">0</span> words
+                                <span id="contentCount">{{ (request.form.content|length) if request.form.content else 0
+                                    }}</span> characters • <span id="wordCount">0</span> words
                             </div>
                         </div>
 
                         <div class="mb-4 form-check">
-                            <input type="checkbox" 
-                                   class="form-check-input" 
-                                   id="is_published" 
-                                   name="is_published" 
-                                   {{ 'checked' if not request.form or request.form.get('is_published') else '' }}>
+                            <input type="checkbox" class="form-check-input" id="is_published" name="is_published"
+                                {{ 'checked' if not request.form or request.form.get('is_published') else '' }}>
                             <label class="form-check-label" for="is_published">
                                 <i class="fas fa-globe"></i> Publish immediately
                             </label>
@@ -68,16 +60,15 @@
                                 <label class="form-label mb-0">
                                     <i class="fas fa-eye"></i> Preview
                                 </label>
-                                <button type="button" 
-                                        class="btn btn-sm btn-outline-primary" 
-                                        onclick="updatePreview()">
+                                <button type="button" class="btn btn-sm btn-outline-primary" onclick="updatePreview()">
                                     <i class="fas fa-refresh"></i> Update Preview
                                 </button>
                             </div>
                             <div class="card">
                                 <div class="card-body" id="previewContent">
                                     <h5 class="card-title text-muted">Preview will appear here...</h5>
-                                    <p class="text-muted">Fill in the form above and click "Update Preview" to see how your post will look.</p>
+                                    <p class="text-muted">Fill in the form above and click "Update Preview" to see how
+                                        your post will look.</p>
                                 </div>
                             </div>
                         </div>
@@ -86,9 +77,7 @@
                             <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
                                 <i class="fas fa-arrow-left"></i> Cancel
                             </a>
-                            <button type="button" 
-                                    class="btn btn-info" 
-                                    onclick="updatePreview()">
+                            <button type="button" class="btn btn-info" onclick="updatePreview()">
                                 <i class="fas fa-eye"></i> Preview
                             </button>
                             <button type="submit" class="btn btn-primary">
@@ -111,7 +100,8 @@
                         <div class="col-md-6">
                             <h6><i class="fas fa-check-circle text-success"></i> Good Practices</h6>
                             <ul class="list-unstyled">
-                                <li><i class="fas fa-arrow-right text-primary"></i> Use descriptive, engaging titles</li>
+                                <li><i class="fas fa-arrow-right text-primary"></i> Use descriptive, engaging titles
+                                </li>
                                 <li><i class="fas fa-arrow-right text-primary"></i> Break content into paragraphs</li>
                                 <li><i class="fas fa-arrow-right text-primary"></i> Check spelling and grammar</li>
                                 <li><i class="fas fa-arrow-right text-primary"></i> Preview before publishing</li>
@@ -120,8 +110,10 @@
                         <div class="col-md-6">
                             <h6><i class="fas fa-info-circle text-info"></i> Formatting Tips</h6>
                             <ul class="list-unstyled">
-                                <li><i class="fas fa-arrow-right text-primary"></i> Use double line breaks for paragraphs</li>
-                                <li><i class="fas fa-arrow-right text-primary"></i> Keep sentences clear and concise</li>
+                                <li><i class="fas fa-arrow-right text-primary"></i> Use double line breaks for
+                                    paragraphs</li>
+                                <li><i class="fas fa-arrow-right text-primary"></i> Keep sentences clear and concise
+                                </li>
                                 <li><i class="fas fa-arrow-right text-primary"></i> Use active voice when possible</li>
                                 <li><i class="fas fa-arrow-right text-primary"></i> Include relevant examples</li>
                             </ul>
@@ -136,89 +128,89 @@
 
 {% block scripts %}
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const titleInput = document.getElementById('title');
-    const contentInput = document.getElementById('content');
-    const titleCount = document.getElementById('titleCount');
-    const contentCount = document.getElementById('contentCount');
-    const wordCount = document.getElementById('wordCount');
-    const publishCheckbox = document.getElementById('is_published');
-    const publishText = document.getElementById('publishText');
+    document.addEventListener('DOMContentLoaded', function () {
+        const titleInput = document.getElementById('title');
+        const contentInput = document.getElementById('content');
+        const titleCount = document.getElementById('titleCount');
+        const contentCount = document.getElementById('contentCount');
+        const wordCount = document.getElementById('wordCount');
+        const publishCheckbox = document.getElementById('is_published');
+        const publishText = document.getElementById('publishText');
 
-    // Initialize word count
-    updateWordCount();
-
-    // Character and word counters
-    titleInput.addEventListener('input', function() {
-        titleCount.textContent = this.value.length;
-        if (this.value.length > 180) {
-            titleCount.style.color = '#dc3545';
-        } else {
-            titleCount.style.color = '#6c757d';
-        }
-    });
-
-    contentInput.addEventListener('input', function() {
+        // Initialize word count
         updateWordCount();
-    });
 
-    // Update button text based on publish status
-    publishCheckbox.addEventListener('change', function() {
-        publishText.textContent = this.checked ? 'Publish Post' : 'Save Draft';
-    });
+        // Character and word counters
+        titleInput.addEventListener('input', function () {
+            titleCount.textContent = this.value.length;
+            if (this.value.length > 180) {
+                titleCount.style.color = '#dc3545';
+            } else {
+                titleCount.style.color = '#6c757d';
+            }
+        });
 
-    function updateWordCount() {
-        const content = contentInput.value;
-        contentCount.textContent = content.length;
-        
-        const words = content.trim().split(/\s+/).filter(word => word.length > 0);
-        wordCount.textContent = content.trim() === '' ? 0 : words.length;
-    }
+        contentInput.addEventListener('input', function () {
+            updateWordCount();
+        });
 
-    // Form validation
-    document.getElementById('createPostForm').addEventListener('submit', function(e) {
-        const title = titleInput.value.trim();
-        const content = contentInput.value.trim();
+        // Update button text based on publish status
+        publishCheckbox.addEventListener('change', function () {
+            publishText.textContent = this.checked ? 'Publish Post' : 'Save Draft';
+        });
 
-        if (!title || !content) {
-            e.preventDefault();
-            alert('Please fill in all required fields.');
-            return false;
+        function updateWordCount() {
+            const content = contentInput.value;
+            contentCount.textContent = content.length;
+
+            const words = content.trim().split(/\s+/).filter(word => word.length > 0);
+            wordCount.textContent = content.trim() === '' ? 0 : words.length;
         }
 
-        if (title.length < 3) {
-            e.preventDefault();
-            alert('Title must be at least 3 characters long.');
-            titleInput.focus();
-            return false;
-        }
+        // Form validation
+        document.getElementById('createPostForm').addEventListener('submit', function (e) {
+            const title = titleInput.value.trim();
+            const content = contentInput.value.trim();
 
-        if (content.length < 10) {
-            e.preventDefault();
-            alert('Content must be at least 10 characters long.');
-            contentInput.focus();
-            return false;
-        }
+            if (!title || !content) {
+                e.preventDefault();
+                alert('Please fill in all required fields.');
+                return false;
+            }
+
+            if (title.length < 3) {
+                e.preventDefault();
+                alert('Title must be at least 3 characters long.');
+                titleInput.focus();
+                return false;
+            }
+
+            if (content.length < 10) {
+                e.preventDefault();
+                alert('Content must be at least 10 characters long.');
+                contentInput.focus();
+                return false;
+            }
+        });
     });
-});
 
-function updatePreview() {
-    const title = document.getElementById('title').value;
-    const content = document.getElementById('content').value;
-    const isPublished = document.getElementById('is_published').checked;
-    const previewContent = document.getElementById('previewContent');
+    function updatePreview() {
+        const title = document.getElementById('title').value;
+        const content = document.getElementById('content').value;
+        const isPublished = document.getElementById('is_published').checked;
+        const previewContent = document.getElementById('previewContent');
 
-    if (!title && !content) {
-        previewContent.innerHTML = `
+        if (!title && !content) {
+            previewContent.innerHTML = `
             <h5 class="card-title text-muted">Preview will appear here...</h5>
             <p class="text-muted">Fill in the form above and click "Update Preview" to see how your post will look.</p>
         `;
-        return;
-    }
+            return;
+        }
 
-    const formattedContent = content.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>');
-    
-    previewContent.innerHTML = `
+        const formattedContent = content.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>');
+
+        previewContent.innerHTML = `
         <h5 class="card-title">${title || 'Untitled Post'}</h5>
         <div class="post-meta mb-3">
             <small class="text-muted">
@@ -231,32 +223,32 @@ function updatePreview() {
             <p>${formattedContent || 'No content yet...'}</p>
         </div>
     `;
-}
-
-// Keyboard shortcuts
-document.addEventListener('keydown', function(e) {
-    // Ctrl/Cmd + S to save
-    if ((e.ctrlKey || e.metaKey) && e.key === 's') {
-        e.preventDefault();
-        document.getElementById('createPostForm').submit();
     }
-    
-    // Ctrl/Cmd + P to preview
-    if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
-        e.preventDefault();
-        updatePreview();
-    }
-});
 
-// Real-time preview updates
-document.getElementById('title').addEventListener('input', updatePreview);
-document.getElementById('content').addEventListener('input', function() {
-    clearTimeout(this.previewTimeout);
-    this.previewTimeout = setTimeout(updatePreview, 500);
-});
-document.getElementById('is_published').addEventListener('change', updatePreview);
+    // Keyboard shortcuts
+    document.addEventListener('keydown', function (e) {
+        // Ctrl/Cmd + S to save
+        if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+            e.preventDefault();
+            document.getElementById('createPostForm').submit();
+        }
 
-// Initial preview
-updatePreview();
+        // Ctrl/Cmd + P to preview
+        if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
+            e.preventDefault();
+            updatePreview();
+        }
+    });
+
+    // Real-time preview updates
+    document.getElementById('title').addEventListener('input', updatePreview);
+    document.getElementById('content').addEventListener('input', function () {
+        clearTimeout(this.previewTimeout);
+        this.previewTimeout = setTimeout(updatePreview, 500);
+    });
+    document.getElementById('is_published').addEventListener('change', updatePreview);
+
+    // Initial preview
+    updatePreview();
 </script>
 {% endblock %}
